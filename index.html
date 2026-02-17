@@ -48,7 +48,6 @@ input, select, button {
 <div class="card">
     <h2>진짜를 찾아라</h2>
 
-    <input id="nickname" placeholder="닉네임 입력">
     <input id="code" placeholder="보안코드 입력" type="password">
     <br>
     <button onclick="checkRole()">역할 확인</button>
@@ -77,35 +76,16 @@ input, select, button {
 <script>
 // 참가자 데이터 (여기만 수정하면 됨)
 const players = [
-    {name:"민수", code:"4821", role:"real"},
-    {name:"지훈", code:"9134", role:"fake", hobby:"낚시"},
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    {name:"태호", code:"2278", role:"real"}
-    
-
+    {name:"민수", code:"1001", role:"real"},
+    {name:"지훈", code:"1002", role:"fake", hobby:"낚시"},
+    {name:"태호", code:"1003", role:"real"},
+    {name:"준호", code:"1004", role:"real"},
+    {name:"현우", code:"1005", role:"real"},
+    {name:"성민", code:"1006", role:"real"},
+    {name:"동현", code:"1007", role:"real"},
+    {name:"지성", code:"1008", role:"real"},
+    {name:"우진", code:"1009", role:"real"},
+    {name:"도윤", code:"1010", role:"real"}
 ];
 
 // 콤보박스 채우기
@@ -122,23 +102,23 @@ window.onload = function() {
 };
 
 function checkRole() {
-    const nick = document.getElementById("nickname").value;
     const code = document.getElementById("code").value;
     const result = document.getElementById("result");
 
-    const player = players.find(p => p.name === nick && p.code === code);
+    const player = players.find(p => p.code === code);
 
     if (!player) {
-        result.textContent = "정보가 일치하지 않습니다.";
+        result.textContent = "코드가 올바르지 않습니다.";
         result.className = "result";
         return;
     }
 
     if (player.role === "real") {
-        result.textContent = "당신은 진짜입니다.";
+        result.textContent = player.name + "님은 진짜입니다.";
         result.className = "result real";
     } else {
-        result.textContent = "당신은 가짜입니다. 취미: " + player.hobby;
+        result.textContent = player.name +
+        "님은 가짜입니다. 취미: " + player.hobby;
         result.className = "result fake";
     }
 
