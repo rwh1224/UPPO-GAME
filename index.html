@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>진짜를 찾아라</title>
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f2f4f8;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+.container {
+    max-width: 420px;
+    margin: auto;
+    padding: 20px;
+}
+.card {
+    background: white;
+    padding: 20px;
+    margin-top: 40px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+input, button, select {
+    width: 100%;
+    padding: 14px;
+    margin-top: 12px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+button {
+    background: #4a6cff;
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+button:active {
+    opacity: 0.8;
+}
+.role {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+.fake { color: #e74c3c; }
+.real { color: #2ecc71; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card" id="nameScreen">
+        <h2>진짜를 찾아라</h2>
+        <p>이름을 입력하세요</p>
+        <input id="nameInput" placeholder="이름 입력" />
+        <button onclick="startGame()">게임 시작</button>
+    </div>
+
+    <div class="card" id="roleScreen" style="display:none;">
+        <h2 id="playerName"></h2>
+        <div class="role" id="roleText"></div>
+        <p id="roleDesc"></p>
+        <button onclick="showVote()">투표하기</button>
+    </div>
+
+    <div class="card" id="voteScreen" style="display:none;">
+        <h2>가짜를 선택하세요</h2>
+        <select id="voteSelect">
+            <option>민수</option>
+            <option>지훈</option>
+            <option>태호</option>
+            <option>준영</option>
+            <option>현우</option>
+        </select>
+        <button onclick="submitVote()">투표 완료</button>
+    </div>
+
+    <div class="card" id="doneScreen" style="display:none;">
+        <h2>투표 완료</h2>
+        <p>결과를 기다려 주세요.</p>
+    </div>
+</div>
+
+<script>
+let playerName = "";
+let role = "";
+
+function startGame() {
+    playerName = document.getElementById("nameInput").value.trim();
+    if (!playerName) {
+        alert("이름을 입력하세요");
+        return;
+    }
+
+    document.getElementById("nameScreen").style.display = "none";
+    document.getElementById("roleScreen").style.display = "block";
+
+    document.getElementById("playerName").innerText = playerName;
+
+    // 랜덤 역할 배정 (20% 확률 가짜)
+    role = Math.random() < 0.2 ? "가짜" : "진짜";
+
+    if (role === "가짜") {
+        document.getElementById("roleText").innerHTML =
+            "<span class='fake'>당신은 가짜입니다</span>";
+        document.getElementById("roleDesc").innerText =
+            "설정: 드론 레이싱이 취미인 사람처럼 행동하세요.";
+    } else {
+        document.getElementById("roleText").innerHTML =
+            "<span class='real'>당신은 진짜입니다</span>";
+        document.getElementById("roleDesc").innerText =
+            "실제 자기소개를 하며 가짜를 찾아보세요.";
+    }
+}
+
+function showVote() {
+    document.getElementById("roleScreen").style.display = "none";
+    document.getElementById("voteScreen").style.display = "block";
+}
+
+function submitVote() {
+    document.getElementById("voteScreen").style.display = "none";
+    document.getElementById("doneScreen").style.display = "block";
+}
+</script>
+
+</body>
+</html>
