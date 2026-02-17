@@ -1,130 +1,152 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>진짜를 찾아라</title>
+
 <style>
 body {
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #f2f4f8;
-    margin: 0;
-    padding: 0;
+    font-family: sans-serif;
+    background: #f2f2f2;
     text-align: center;
-}
-.container {
-    max-width: 420px;
-    margin: auto;
     padding: 20px;
 }
 .card {
     background: white;
     padding: 20px;
-    margin-top: 40px;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    max-width: 400px;
+    margin: auto;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-input, button, select {
-    width: 100%;
-    padding: 14px;
-    margin-top: 12px;
+input, select, button {
+    padding: 10px;
+    margin: 8px;
+    width: 80%;
     font-size: 16px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
 }
-button {
-    background: #4a6cff;
-    color: white;
-    border: none;
+.hidden {
+    display: none;
+}
+.result {
+    font-size: 20px;
+    margin-top: 15px;
     font-weight: bold;
 }
-button:active {
-    opacity: 0.8;
+.fake {
+    color: red;
 }
-.role {
-    font-size: 22px;
-    font-weight: bold;
-    margin-top: 10px;
+.real {
+    color: green;
 }
-.fake { color: #e74c3c; }
-.real { color: #2ecc71; }
 </style>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="card" id="nameScreen">
-        <h2>진짜를 찾아라</h2>
-        <p>이름을 입력하세요</p>
-        <input id="nameInput" placeholder="이름 입력" />
-        <button onclick="startGame()">게임 시작</button>
-    </div>
+<div class="card">
+    <h2>진짜를 찾아라</h2>
 
-    <div class="card" id="roleScreen" style="display:none;">
-        <h2 id="playerName"></h2>
-        <div class="role" id="roleText"></div>
-        <p id="roleDesc"></p>
-        <button onclick="showVote()">투표하기</button>
-    </div>
+    <input id="nickname" placeholder="닉네임 입력">
+    <input id="code" placeholder="보안코드 입력" type="password">
+    <br>
+    <button onclick="checkRole()">역할 확인</button>
 
-    <div class="card" id="voteScreen" style="display:none;">
-        <h2>가짜를 선택하세요</h2>
-        <select id="voteSelect">
-            <option>민수</option>
-            <option>지훈</option>
-            <option>태호</option>
-            <option>준영</option>
-            <option>현우</option>
-        </select>
+    <div id="result" class="result"></div>
+
+    <div id="voteSection" class="hidden">
+        <h3>가짜라고 생각하는 사람 선택</h3>
+
+        <select id="vote1"></select>
+        <select id="vote2"></select>
+        <select id="vote3"></select>
+        <select id="vote4"></select>
+        <select id="vote5"></select>
+        <select id="vote6"></select>
+        <select id="vote7"></select>
+        <select id="vote8"></select>
+        <select id="vote9"></select>
+        <select id="vote10"></select>
+
+        <br>
         <button onclick="submitVote()">투표 완료</button>
-    </div>
-
-    <div class="card" id="doneScreen" style="display:none;">
-        <h2>투표 완료</h2>
-        <p>결과를 기다려 주세요.</p>
     </div>
 </div>
 
 <script>
-let playerName = "";
-let role = "";
+// 참가자 데이터 (여기만 수정하면 됨)
+const players = [
+    {name:"민수", code:"4821", role:"real"},
+    {name:"지훈", code:"9134", role:"fake", hobby:"낚시"},
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    {name:"태호", code:"2278", role:"real"}
+    
 
-function startGame() {
-    playerName = document.getElementById("nameInput").value.trim();
-    if (!playerName) {
-        alert("이름을 입력하세요");
+];
+
+// 콤보박스 채우기
+window.onload = function() {
+    const selects = document.querySelectorAll("select");
+    players.forEach(p => {
+        selects.forEach(sel => {
+            let opt = document.createElement("option");
+            opt.value = p.name;
+            opt.textContent = p.name;
+            sel.appendChild(opt);
+        });
+    });
+};
+
+function checkRole() {
+    const nick = document.getElementById("nickname").value;
+    const code = document.getElementById("code").value;
+    const result = document.getElementById("result");
+
+    const player = players.find(p => p.name === nick && p.code === code);
+
+    if (!player) {
+        result.textContent = "정보가 일치하지 않습니다.";
+        result.className = "result";
         return;
     }
 
-    document.getElementById("nameScreen").style.display = "none";
-    document.getElementById("roleScreen").style.display = "block";
-
-    document.getElementById("playerName").innerText = playerName;
-
-    // 랜덤 역할 배정 (20% 확률 가짜)
-    role = Math.random() < 0.2 ? "가짜" : "진짜";
-
-    if (role === "가짜") {
-        document.getElementById("roleText").innerHTML =
-            "<span class='fake'>당신은 가짜입니다</span>";
-        document.getElementById("roleDesc").innerText =
-            "설정: 드론 레이싱이 취미인 사람처럼 행동하세요.";
+    if (player.role === "real") {
+        result.textContent = "당신은 진짜입니다.";
+        result.className = "result real";
     } else {
-        document.getElementById("roleText").innerHTML =
-            "<span class='real'>당신은 진짜입니다</span>";
-        document.getElementById("roleDesc").innerText =
-            "실제 자기소개를 하며 가짜를 찾아보세요.";
+        result.textContent = "당신은 가짜입니다. 취미: " + player.hobby;
+        result.className = "result fake";
     }
-}
 
-function showVote() {
-    document.getElementById("roleScreen").style.display = "none";
-    document.getElementById("voteScreen").style.display = "block";
+    document.getElementById("voteSection").classList.remove("hidden");
 }
 
 function submitVote() {
-    document.getElementById("voteScreen").style.display = "none";
-    document.getElementById("doneScreen").style.display = "block";
+    alert("투표가 완료되었습니다!");
 }
 </script>
 
