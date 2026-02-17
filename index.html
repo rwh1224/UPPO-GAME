@@ -5,55 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UPPO GAME</title>
   <style>
-    body {
-      font-family: 'Malgun Gothic', sans-serif;
-      text-align: center;
-      margin-top: 60px;
-      background-color: #f4f7f6;
-    }
-    input, button {
-      font-size: 18px;
-      padding: 12px;
-      margin: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
-      border: none;
-      transition: 0.3s;
-    }
-    button:hover { background-color: #0056b3; }
-    
-    /* 화면 전환 설정 */
+    body { font-family: sans-serif; text-align: center; margin-top: 60px; background-color: #f4f7f6; }
+    input, button { font-size: 18px; padding: 12px; margin: 10px; border-radius: 8px; }
     .screen { display: none; padding: 20px; }
-    #nickScreen { display: block; } /* 첫 화면만 보이게 설정 */
-
-    .role-text {
-      font-size: 40px;
-      font-weight: bold;
-      color: #e91e63;
-      margin: 30px 0;
-    }
-    .link-button {
-      display: inline-block;
-      background-color: #4CAF50;
-      color: white;
-      font-size: 20px;
-      padding: 15px 30px;
-      border-radius: 5px;
-      text-decoration: none;
-      margin-top: 20px;
-    }
-    #nickError { color: red; font-weight: bold; margin-top: 10px; }
+    #nickScreen { display: block; } /* 첫 화면 강제 표시 */
+    .role-text { font-size: 40px; font-weight: bold; color: #e91e63; margin: 30px 0; }
+    .link-button { display: inline-block; background-color: #4CAF50; color: white; font-size: 20px; padding: 15px 30px; text-decoration: none; border-radius: 5px; }
+    #nickError { color: red; font-weight: bold; margin-top: 10px; min-height: 1.2em; }
   </style>
 </head>
 <body>
 
 <div id="nickScreen" class="screen">
-  <h1>업무포털 신학기 모임에 오신걸 환영합니다.<br>닉네임을 입력하세요</h1>
+  <h1>업무포털 신학기 모임<br>닉네임을 입력하세요</h1>
   <input type="text" id="nickInput" placeholder="닉네임 입력">
   <br>
   <button id="submitBtn" onclick="sendNickname()">확인</button>
@@ -63,29 +27,64 @@
 <div id="roleScreen" class="screen">
   <h1>당신의 역할은?</h1>
   <div id="roleResult" class="role-text"></div>
-  <p>3초 후 투표 페이지로 이동합니다...</p>
+  <p>잠시 후 투표 페이지로 이동합니다...</p>
 </div>
 
 <div id="voteScreen" class="screen">
   <h1>투표를 진행하세요</h1>
-  <p>아래 버튼을 눌러 구글 폼으로 이동하세요.</p>
-  <a class="link-button" 
-     href="https://docs.google.com/forms/d/e/1FAIpQLSdaFacNEOpuVPWfyrxA3iOkgQOyZD30tl7qNWT2AfylKkA4Sw/viewform" 
-     target="_blank">
-     구글폼으로 이동
-  </a>
+  <a class="link-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdaFacNEOpuVPWfyrxA3iOkgQOyZD30tl7qNWT2AfylKkA4Sw/viewform" target="_blank">구글폼으로 이동</a>
 </div>
 
 <script>
-  // 사용자님의 앱스크립트 배포 URL (새로 배포 후 교체 권장)
+  // 배포한 주소를 정확히 넣으세요 (마지막에 /exec 확인)
   const scriptURL = "https://script.google.com/macros/s/AKfycbxsqrir7Jc4iW9Tkto3z8Y4Smlxyi0WHpzipVrCJ7zgQUdv5vk8kRZ7XpnOy6khWuT4/exec";
-
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-    document.getElementById(id).style.display = "block";
-  }
 
   function sendNickname() {
     const nickname = document.getElementById("nickInput").value.trim();
     const btn = document.getElementById("submitBtn");
     const error = document.getElementById("nickError");
+    
+    if (!nickname) {
+      error.textContent = "닉네임을 입력해주세요!";
+      return;
+    }
+
+    error.style.color = "blue";
+    error.textContent = "서버 응답 대기 중...";
+    btn.disabled = true;
+
+    // CORS 우회를 위해 redirect: 'follow' 옵션이 핵심입니다.
+    fetch(`${scriptURL}?nickname=${encodeURIComponent(nickname)}`, {
+      method: 'GET',
+      mode: 'cors',
+      redirect: 'follow'
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('네트워크 응답 에러');
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        document.getElementById("roleResult").innerText = data.role;
+        document.getElementById("nickScreen").style.display = "none";
+        document.getElementById("roleScreen").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("roleScreen").style.display = "none";
+          document.getElementById("voteScreen").style.display = "block";
+        }, 3000);
+      } else {
+        error.style.color = "red";
+        error.textContent = data.error || "빈 자리가 없습니다.";
+        btn.disabled = false;
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      error.style.color = "red";
+      error.textContent = "연결 실패! 구글 앱스 스크립트 배포 설정(모든 사용자)을 확인하세요.";
+      btn.disabled = false;
+    });
+  }
+</script>
+</body>
+</html>
