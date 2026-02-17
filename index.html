@@ -65,8 +65,8 @@
   </div>
 
   <script>
-    // 네가 준 Apps Script URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpZY7r_VzXwaSQACDiuLvK2JIOj8A9pubrE9XNpHxmmDaZ15hlPk9Nj68BuV6REJJP/exec";
+    // 네 Apps Script URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbycCnZFURrQE-iZ4zfP0-skWlwM5XuMQWFAYf--7iwcC8CVCM9ivpfq46-oYxuW4JHY/exec";
 
     function showScreen(id) {
       document.getElementById("codeScreen").style.display = "none";
@@ -79,6 +79,8 @@
       const nickname = document.getElementById("nicknameInput").value.trim();
       const error = document.getElementById("codeError");
 
+      error.textContent = "";
+
       if (!nickname) {
         error.textContent = "닉네임을 입력하세요.";
         return;
@@ -90,14 +92,13 @@
       })
       .then(res => res.json())
       .then(data => {
-        if (data.status === "duplicate") {
-          error.textContent = "이미 사용된 닉네임입니다.";
-        } else if (data.status === "ok") {
+        if (data.status === "ok") {
           document.getElementById("roleResult").innerHTML =
             `닉네임: ${nickname}<br>
-             순서: ${data.order}번<br>
              상태: ${data.role}`;
           showScreen("roleScreen");
+        } else if (data.status === "notfound") {
+          error.textContent = "등록되지 않은 닉네임입니다.";
         } else {
           error.textContent = "서버 오류가 발생했습니다.";
         }
