@@ -74,7 +74,7 @@ input, select, button {
 </div>
 
 <script>
-// 참가자 데이터 (여기만 수정하면 됨)
+// 참가자 데이터 (여기만 수정)
 const players = [
     {name:"민수", code:"1001", role:"real"},
     {name:"지훈", code:"1002", role:"fake", hobby:"낚시"},
@@ -118,12 +118,11 @@ function checkRole() {
         result.className = "result real";
     } else {
         result.textContent = player.name +
-        "님은 가짜입니다. 취미: " + player.hobby;
+            "님은 가짜입니다. 취미: " + player.hobby;
         result.className = "result fake";
     }
 
     document.getElementById("voteSection").classList.remove("hidden");
-
 }
 
 function submitVote() {
